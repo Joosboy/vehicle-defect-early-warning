@@ -1,0 +1,6 @@
+Signal: {{signal.Signal}}
+Recall status: {{signal.Recall status}} ; related recall: {{signal.Related recall}} ( {{signal.Related recall model years}} )
+Complaints: {{signal.Complaints}}, severity score {{signal.Severity score}}, serious {{signal.Serious complaints}}, crashes or fires {{signal.Crashes or fires}}, injuries {{signal.Injuries}}, deaths {{signal.Deaths}}
+Model years: {{signal.Model years}} ; first {{signal.First complaint}} ; latest {{signal.Latest complaint}} ; above threshold since {{signal.Above threshold since}}
+Evidence (highest severity first):
+{{signal.Evidence sample}}

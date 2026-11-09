@@ -1,0 +1,2 @@
+Complaint text: {{summary}}
+NHTSA component tags: {{nhtsa_components}}

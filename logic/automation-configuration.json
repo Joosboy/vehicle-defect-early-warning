@@ -1,0 +1,19 @@
+{
+  "name": "Draft AIP proposal for new signals",
+  "status": "Active",
+  "trigger": {
+    "event": "Objects added",
+    "object_set": "Signals",
+    "where": {
+      "Status": "Needs review"
+    },
+    "frequency": "Live monitoring"
+  },
+  "effect": {
+    "action": "Draft proposal with AIP",
+    "parameters": 1
+  },
+  "retry": "Every 10 seconds, up to 3 times",
+  "expires": "2027-01-25",
+  "scope": "User scope"
+}

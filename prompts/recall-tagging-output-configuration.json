@@ -1,0 +1,22 @@
+{
+  "block": "Tag recalls (AIP)",
+  "pipeline_rid": "ri.eddie.main.pipeline.c8a80a1a-6dd1-4693-8487-2fbab5249187",
+  "model": "GPT-4.1 mini",
+  "temperature": 0,
+  "response_format": "Struct",
+  "include_errors": true,
+  "skip_recomputing_rows": true,
+  "output_column": "tags",
+  "fields": [
+    {
+      "name": "recall_component",
+      "foundry_type": "String"
+    },
+    {
+      "name": "recall_failure_mode",
+      "foundry_type": "String"
+    }
+  ],
+  "prompt": "recall-tagging-system-prompt.txt",
+  "input_template": "recall-tagging-input-template.txt"
+}

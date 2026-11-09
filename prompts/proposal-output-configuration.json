@@ -1,0 +1,29 @@
+{
+  "block": "Draft investigation proposal",
+  "input": "signal",
+  "model": "GPT-6.1 Sol",
+  "reasoning_effort": "medium",
+  "structured_output": "Strict",
+  "output_type": "Struct",
+  "fields": [
+    {
+      "name": "recommended_action",
+      "foundry_type": "String"
+    },
+    {
+      "name": "summary",
+      "foundry_type": "String"
+    },
+    {
+      "name": "cited_complaint_ids",
+      "foundry_type": "String"
+    }
+  ],
+  "recommended_action_values": [
+    "Open investigation",
+    "Review recall scope",
+    "Keep monitoring"
+  ],
+  "prompt": "proposal-system-prompt.txt",
+  "input_template": "proposal-input-template.txt"
+}

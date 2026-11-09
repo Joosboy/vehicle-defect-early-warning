@@ -1,0 +1,11 @@
+{
+  "block": "Save proposal",
+  "type": "Ontology edits",
+  "description": "Save the AIP draft on the input signal; do not change any human decision fields.",
+  "parameters": {
+    "Signal": "signal",
+    "AIP proposed action": "Draft investigation proposal.recommended_action",
+    "AIP proposal": "Draft investigation proposal.summary",
+    "AIP cited complaints": "Draft investigation proposal.cited_complaint_ids"
+  }
+}

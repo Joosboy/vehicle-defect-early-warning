@@ -1,0 +1,57 @@
+{
+  "pipeline": "Complaint extraction pipeline (AIP)",
+  "source": "../exports/complaint-extraction-java/PipelineLogic.java",
+  "inputs": [
+    "complaints",
+    "recalls"
+  ],
+  "ai_steps": [
+    {
+      "name": "tagRecallsAip",
+      "output_column": "tags",
+      "fields": {
+        "recall_component": "tags.ok.recall_component",
+        "recall_failure_mode": "tags.ok.recall_failure_mode",
+        "tag_error": "tags.error"
+      }
+    },
+    {
+      "name": "extractComplaintFactsAip",
+      "output_column": "extraction",
+      "fields": {
+        "component": "extraction.ok.component",
+        "failure_mode": "extraction.ok.failure_mode",
+        "severity": "extraction.ok.severity",
+        "while_driving": "extraction.ok.while_driving",
+        "mileage": "extraction.ok.mileage",
+        "owner_mentions_recall": "extraction.ok.owner_mentions_recall",
+        "evidence_quote": "extraction.ok.evidence_quote"
+      },
+      "error_field": {
+        "llm_error": "extraction.error"
+      }
+    }
+  ],
+  "mileage": {
+    "when": "mileage == 0",
+    "then": "null",
+    "else": "keep mileage"
+  },
+  "severity": {
+    "set_to_4_if_any": [
+      "crash equals true",
+      "fire equals true",
+      "injuries greater than 0",
+      "deaths greater than 0"
+    ],
+    "else": "extracted severity, or 1 if missing"
+  },
+  "dropped_columns": [
+    "tags",
+    "extraction"
+  ],
+  "outputs": [
+    "datasetOutput",
+    "complaintsEnriched"
+  ]
+}

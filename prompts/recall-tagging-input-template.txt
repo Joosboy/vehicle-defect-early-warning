@@ -1,0 +1,2 @@
+Recall component: {{nhtsa_component}}
+Recall summary: {{summary}}

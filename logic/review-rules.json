@@ -1,0 +1,227 @@
+{
+  "pipeline": "Signal rules pipeline",
+  "source": "../exports/signal-rules-java/PipelineLogic.java",
+  "signal_id": {
+    "cases": [
+      {
+        "when": {
+          "field": "recall_status",
+          "operator": "equals",
+          "value": "Covered"
+        },
+        "then": {
+          "value": null,
+          "cast_to": "String"
+        }
+      },
+      {
+        "when": {
+          "field": "failure_mode",
+          "operator": "equals",
+          "value": "other"
+        },
+        "then": {
+          "value": null,
+          "cast_to": "String"
+        }
+      },
+      {
+        "when": {
+          "field": "failure_mode",
+          "operator": "is_null"
+        },
+        "then": {
+          "value": null,
+          "cast_to": "String"
+        }
+      }
+    ],
+    "else": {
+      "function": "concat_ws",
+      "separator": "|",
+      "fields": [
+        "model",
+        "failure_mode"
+      ]
+    },
+    "keep_rows_where": "signal_id is not null",
+    "java_line": 550
+  },
+  "severity_weight": {
+    "input": "severity",
+    "cases": [
+      {
+        "equals": 4,
+        "then": 15
+      },
+      {
+        "equals": 3,
+        "then": 5
+      },
+      {
+        "equals": 2,
+        "then": 2
+      }
+    ],
+    "else": 1,
+    "java_line": 579
+  },
+  "status": {
+    "all_of": [
+      {
+        "field": "severity_score",
+        "operator": "greater_than_or_equal",
+        "value": 30
+      },
+      {
+        "field": "complaint_count",
+        "operator": "greater_than_or_equal",
+        "value": 5
+      }
+    ],
+    "then": "Needs review",
+    "else": "Monitoring",
+    "java_line": 900
+  },
+  "recall_matching": {
+    "inputs": [
+      "complaintsEnriched",
+      "recallVehicles",
+      "vehicles",
+      "recalls"
+    ],
+    "tag_recalls_with_aip": "../prompts/recall-tagging-system-prompt.txt",
+    "joins": [
+      {
+        "left": "recallVehicles",
+        "right": "vehicles",
+        "how": "left",
+        "keys": [
+          "vehicle_id"
+        ]
+      },
+      {
+        "left": "recallScope",
+        "right": "tagged recall fields",
+        "how": "inner",
+        "keys": [
+          "campaign_number"
+        ]
+      }
+    ],
+    "vehicle_level": {
+      "group_by": [
+        "vehicle_id",
+        "recall_failure_mode"
+      ],
+      "aggregates": {
+        "covered_campaign": "min(campaign_number)",
+        "covered_since": "min(report_received_date)"
+      },
+      "complaint_left_join_keys": [
+        [
+          "vehicle_id",
+          "vehicle_id"
+        ],
+        [
+          "failure_mode",
+          "recall_failure_mode"
+        ]
+      ]
+    },
+    "model_level": {
+      "group_by": [
+        "model",
+        "recall_failure_mode"
+      ],
+      "aggregates": {
+        "related_campaign": "min(campaign_number)",
+        "related_since": "min(report_received_date)"
+      },
+      "complaint_left_join_keys": [
+        [
+          "model",
+          "model"
+        ],
+        [
+          "failure_mode",
+          "recall_failure_mode"
+        ]
+      ]
+    },
+    "recall_status": [
+      {
+        "condition": "covered_campaign is not null",
+        "value": "Covered"
+      },
+      {
+        "condition": "related_campaign is not null",
+        "value": "Possible scope gap"
+      },
+      {
+        "condition": "otherwise",
+        "value": "Not covered"
+      }
+    ],
+    "matched_campaign": "coalesce(covered_campaign, related_campaign)"
+  },
+  "signal_aggregation": {
+    "group_by": [
+      "signal_id",
+      "make",
+      "model",
+      "failure_mode",
+      "recall_status",
+      "matched_campaign"
+    ],
+    "indicators": {
+      "is_serious": "1 when severity >= 3, otherwise 0",
+      "is_crash_or_fire": "1 when coalesce(crash,false) OR coalesce(fire,false), otherwise 0"
+    },
+    "aggregates": {
+      "complaint_count": "count(complaint_id)",
+      "severity_score": "sum(severity_weight)",
+      "serious_count": "sum(is_serious)",
+      "crash_or_fire_count": "sum(is_crash_or_fire)",
+      "injury_count": "sum(injuries)",
+      "death_count": "sum(deaths)",
+      "first_seen": "min(date_filed)",
+      "last_seen": "max(date_filed)",
+      "model_years": "collect_set(model_year), ascending sort, cast entries to String, join with comma+space"
+    },
+    "java_line": 604
+  },
+  "flagged_since": {
+    "method": "self-join on signal_id",
+    "running_rows": "b_date_filed < date_filed OR (b_date_filed = date_filed AND b_complaint_id <= complaint_id)",
+    "aggregates": {
+      "running_count": "count(b_weight)",
+      "running_score": "sum(b_weight)"
+    },
+    "threshold": {
+      "running_count_gte": 5,
+      "running_score_gte": 30
+    },
+    "result": "min(date_filed) per signal_id among qualifying rows",
+    "java_line": 1003
+  },
+  "evidence_sample": {
+    "top_n": 8,
+    "line_fields": [
+      "evidence_rank",
+      "complaint_id",
+      "date_filed formatted yyyy-MM-dd",
+      "model_year",
+      "severity",
+      "evidence_quote"
+    ],
+    "group_by": [
+      "signal_id"
+    ],
+    "java_line": 671
+  },
+  "spot_check": {
+    "expression": "complaint_id % 80 == 0",
+    "java_line": 586
+  }
+}

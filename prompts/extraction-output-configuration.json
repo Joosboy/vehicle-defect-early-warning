@@ -1,0 +1,42 @@
+{
+  "block": "Extract complaint facts",
+  "pipeline_rid": "ri.eddie.main.pipeline.a668c908-2c2f-4d47-84f7-67a32ac42ffb",
+  "model": "GPT-4.1 mini",
+  "temperature": 0,
+  "response_format": "Struct",
+  "include_errors": true,
+  "skip_recomputing_rows": true,
+  "output_column": "extraction",
+  "fields": [
+    {
+      "name": "component",
+      "foundry_type": "String"
+    },
+    {
+      "name": "failure_mode",
+      "foundry_type": "String"
+    },
+    {
+      "name": "severity",
+      "foundry_type": "Integer"
+    },
+    {
+      "name": "while_driving",
+      "foundry_type": "Boolean"
+    },
+    {
+      "name": "mileage",
+      "foundry_type": "Integer"
+    },
+    {
+      "name": "owner_mentions_recall",
+      "foundry_type": "Boolean"
+    },
+    {
+      "name": "evidence_quote",
+      "foundry_type": "String"
+    }
+  ],
+  "prompt": "extraction-system-prompt.txt",
+  "input_template": "extraction-input-template.txt"
+}
