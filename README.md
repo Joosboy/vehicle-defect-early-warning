@@ -4,9 +4,13 @@ I built this for Palantir's Build with AIP challenge. It's a Foundry app that re
 
 The data is 2,930 NHTSA complaints filed since January 2021 about 2018 to 2022 Honda Accords, plus the recalls that cover those cars.
 
+**In numbers:** 2,930 complaints → 2,622 not already covered by a recall → 2,270 with a clear failure mode, grouped into 20 signals → 17 in the review queue for an engineer. In a hand check of 41 complaints, the AI picked the right failure mode for 36 of them.
+
 ## Why this problem
 
 Owners describe problems in their own words: the car braked on its own, the airbag didn't go off. Those reports are often the first sign of a defect that ends in a recall, but there are thousands of them and nobody has time to read them all. If a pattern gets missed, people keep driving cars with a known problem. I wanted a tool that does the reading and leaves the decision with an engineer.
+
+One example, as a look-back on today's data: NHTSA recalled an airbag seat sensor on 2020 to 2022 Accords in February 2024, when 2018 and 2019 Accords already had 27 complaints about the same sensor, but the recall wasn't extended to those years until May 2026, about 27 months later ([details](docs/evaluation.md#the-recall-example)).
 
 ## How it works
 
@@ -29,7 +33,7 @@ The app itself lives in Foundry and is mostly built with low-code tools, so this
 ## Limitations and next steps
 
 - The 27-month number is a look-back on today's data. I haven't rebuilt it as a proper point-in-time backtest yet, which is the first thing I'd do to make it a real metric.
-- I haven't measured extraction accuracy. The Spot check tab pulls 41 complaints (every ID divisible by 80) for checking by hand, and 6 of the 2,930 complaints came back with an extraction error.
+- The accuracy number comes from me checking 41 complaints by hand (every complaint ID divisible by 80, in the Spot check tab), which is a small sample. 6 of the 2,930 complaints came back with an extraction error.
 - The Automate rule is active but hasn't fired yet, since no new signal has crossed the threshold since I set it up. Every proposal in the demo was drafted by hand.
 - Complaints are owner reports, not confirmed defects, and the proposals are written that way.
 - With more time, I'd add warranty and dealer data, which usually shows problems months before NHTSA complaints do, and use engineers' decisions to tune the rules.
